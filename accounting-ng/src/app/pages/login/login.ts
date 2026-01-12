@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -18,9 +18,9 @@ export class Login {
 
   constructor(
     private fb: FormBuilder,
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router
   ) {
-    // ✅ fb is initialized now, safe to use
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -42,8 +42,35 @@ export class Login {
 
     this.auth.login(email, password).subscribe({
       next: () => {
-        this.isSubmitting = false;
-        alert('Login successful (token saved).');
+        const normalized = (email ?? '').trim().toLowerCase();
+
+        // Admin is email-based
+        if (normalized === 'admin@local.test') {
+          this.isSubmitting = false;
+          this.router.navigateByUrl('/admin');
+          return;
+        }
+
+        // Everyone else: ask backend which access level they have
+        this.auth.getAccessLevel().subscribe({
+          next: (res: any) => {
+            this.isSubmitting = false;
+
+            const level = (res?.accessLevel ?? '').toLowerCase();
+
+            if (level === 'bookkeeper') {
+              this.router.navigateByUrl('/bookkeeper');
+            } else if (level === 'reportviewer') {
+              this.router.navigateByUrl('/viewer');
+            } else {
+              this.router.navigateByUrl('/registered');
+            }
+          },
+          error: (_err: any) => {
+            this.isSubmitting = false;
+            this.router.navigateByUrl('/registered');
+          }
+        });
       },
       error: (err: any) => {
         this.isSubmitting = false;

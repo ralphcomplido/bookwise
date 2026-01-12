@@ -3,10 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 export interface LoginResponse {
-  tokenType: string;
-  accessToken: string;
-  expiresIn: number;
-  refreshToken: string;
+  tokenType?: string;
+  accessToken?: string;
+  expiresIn?: number;
+  refreshToken?: string;
+
+  token_type?: string;
+  access_token?: string;
+  expires_in?: number;
+  refresh_token?: string;
 }
 
 @Injectable({
@@ -28,7 +33,18 @@ export class AuthService {
       twoFactorCode: '',
       twoFactorRecoveryCode: ''
     }).pipe(
-      tap(res => localStorage.setItem('access_token', res.accessToken))
+      tap(res => {
+        const token =
+          res.accessToken ??
+          (res as any).access_token ??
+          null;
+
+        if (token) {
+          localStorage.setItem('access_token', token);
+        } else {
+          localStorage.removeItem('access_token');
+        }
+      })
     );
   }
 
@@ -39,4 +55,15 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem('access_token');
   }
+
+  getAccessLevel(): Observable<{ accessLevel: string }> {
+  const token = this.getToken();
+  const headers: any = token ? { Authorization: `Bearer ${token}` } : {};
+
+  return this.http.get<{ accessLevel: string }>(
+    `${this.apiBaseUrl}/api/access-level`,
+    { headers }
+  );
+}
+
 }

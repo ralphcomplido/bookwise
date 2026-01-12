@@ -1,0 +1,61 @@
+<div style="max-width:1000px;margin:40px auto;font-family:Arial;">
+  <h2>Admin</h2>
+
+  <div style="margin:12px 0;">
+    <button (click)="loadUsers()" [disabled]="isLoading">
+      {{ isLoading ? 'Loading...' : 'Refresh' }}
+    </button>
+  </div>
+
+  <p style="color:red" *ngIf="error">{{ error }}</p>
+
+  <p *ngIf="isLoading">Loading users...</p>
+
+  <table
+    *ngIf="!isLoading"
+    border="1"
+    cellpadding="8"
+    cellspacing="0"
+    style="width:100%;border-collapse:collapse;"
+  >
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Access Level</th>
+        <th>Set Access Level</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let u of users; trackBy: trackById">
+        <td>{{ u.email }}</td>
+        <td>{{ u.accessLevel }}</td>
+
+        <td>
+          <span *ngIf="isAdminRow(u)">Admin (fixed)</span>
+
+          <select *ngIf="!isAdminRow(u)" [(ngModel)]="selected[u.id]">
+            <option *ngFor="let level of accessLevels" [ngValue]="level">
+              {{ level }}
+            </option>
+          </select>
+        </td>
+
+        <td>
+          <button
+            *ngIf="!isAdminRow(u)"
+            (click)="save(u)"
+            [disabled]="!canSave(u) || saving[u.id]"
+          >
+            {{ saving[u.id] ? 'Saving...' : 'Save' }}
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="users.length === 0">
+        <td colspan="4">No users found.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
