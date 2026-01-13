@@ -3,6 +3,25 @@
 
   <div style="border:1px solid #ddd;padding:14px;border-radius:8px;">
     <div style="margin-bottom:10px;">
+      <label>Expense Account (Debit)</label><br />
+      <select [(ngModel)]="expenseAccountId" [disabled]="isLoadingAccounts">
+        <option *ngFor="let a of accounts" [ngValue]="a.id">
+          {{ a.accountCode }} - {{ a.name }} ({{ typeLabel(a.type) }})
+        </option>
+      </select>
+      <div *ngIf="isLoadingAccounts" style="color:#555;margin-top:6px;">Loading accounts...</div>
+    </div>
+
+    <div style="margin-bottom:10px;">
+      <label>Payment Account (Credit)</label><br />
+      <select [(ngModel)]="paymentAccountId" [disabled]="isLoadingAccounts">
+        <option *ngFor="let a of accounts" [ngValue]="a.id">
+          {{ a.accountCode }} - {{ a.name }} ({{ typeLabel(a.type) }})
+        </option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:10px;">
       <label>Date</label><br />
       <input type="date" [(ngModel)]="occurredOn" />
     </div>
@@ -18,17 +37,12 @@
     </div>
 
     <div style="margin-bottom:10px;">
-      <label>Category (optional)</label><br />
-      <input type="text" [(ngModel)]="category" />
-    </div>
-
-    <div style="margin-bottom:10px;">
       <label>Reference No (optional)</label><br />
       <input type="text" [(ngModel)]="referenceNo" />
     </div>
 
     <div style="display:flex;gap:10px;margin-top:12px;">
-      <button (click)="submit()" [disabled]="isSubmitting">
+      <button (click)="submit()" [disabled]="isSubmitting || isLoadingAccounts">
         {{ isSubmitting ? 'Saving...' : 'Save Expense' }}
       </button>
 

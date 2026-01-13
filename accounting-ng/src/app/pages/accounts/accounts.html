@@ -54,4 +54,16 @@
       <tr *ngFor="let a of rows; trackBy: trackById">
         <td>{{ a.accountCode }}</td>
         <td>{{ a.name }}</td>
-        <td>{{
+        <td>{{ typeLabel(a.type) }}</td>
+        <td>
+          <button (click)="delete(a.id)" [disabled]="deleting[a.id]">
+            {{ deleting[a.id] ? 'Deleting...' : 'Delete' }}
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="rows.length === 0">
+        <td colspan="4">No accounts yet.</td>
+      </tr>
+    </tbody>
+

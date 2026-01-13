@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 
 export interface TransactionListItem {
   id: number;
+  accountId: number;
   transactionType: string;   // Income / Expense
   occurredOn: string;        // ISO string
   description: string;
@@ -16,6 +17,7 @@ export interface TransactionListItem {
 }
 
 export interface TransactionCreate {
+  accountId: number;
   transactionType: 'Income' | 'Expense';
   occurredOn: string;
   description: string;

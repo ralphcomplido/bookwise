@@ -18,6 +18,13 @@
       </a>
 
       <a
+        *ngIf="canManageTransactions()"
+        routerLink="/accounts"
+        style="display:inline-block;padding:12px 16px;border:1px solid #ddd;border-radius:8px;text-decoration:none;">
+        Manage Accounts
+      </a>
+
+      <a
         *ngIf="canViewReports()"
         routerLink="/reports"
         style="display:inline-block;padding:12px 16px;border:1px solid #ddd;border-radius:8px;text-decoration:none;">
