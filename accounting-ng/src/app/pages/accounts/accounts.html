@@ -1,0 +1,57 @@
+<div style="max-width:1000px;margin:40px auto;font-family:Arial;">
+  <h2>Accounts</h2>
+
+  <div style="border:1px solid #ddd;padding:14px;border-radius:8px;margin:14px 0;">
+    <h3 style="margin-top:0;">Add Account</h3>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div>
+        <label>Account Code</label><br />
+        <input type="text" [(ngModel)]="accountCode" placeholder="e.g., 5100" />
+      </div>
+
+      <div style="flex:1;min-width:240px;">
+        <label>Account Name</label><br />
+        <input style="width:100%;" type="text" [(ngModel)]="name" placeholder="e.g., Office Supplies Expense" />
+      </div>
+
+      <div>
+        <label>Type</label><br />
+        <select [(ngModel)]="type">
+          <option *ngFor="let t of typeOptions" [ngValue]="t.value">{{ t.label }}</option>
+        </select>
+      </div>
+
+      <div>
+        <button (click)="submit()" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Saving...' : 'Add' }}
+        </button>
+      </div>
+    </div>
+
+    <p style="color:red;margin:10px 0 0 0;" *ngIf="error">{{ error }}</p>
+  </div>
+
+  <div style="margin:12px 0;">
+    <button (click)="load()" [disabled]="isLoading">
+      {{ isLoading ? 'Loading...' : 'Refresh' }}
+    </button>
+  </div>
+
+  <p *ngIf="isLoading">Loading accounts...</p>
+
+  <table *ngIf="!isLoading" border="1" cellpadding="8" cellspacing="0" style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let a of rows; trackBy: trackById">
+        <td>{{ a.accountCode }}</td>
+        <td>{{ a.name }}</td>
+        <td>{{

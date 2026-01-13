@@ -44,24 +44,20 @@ export class Login {
       next: () => {
         const normalized = (email ?? '').trim().toLowerCase();
 
-        // Admin is email-based
         if (normalized === 'admin@local.test') {
           this.isSubmitting = false;
           this.router.navigateByUrl('/admin');
           return;
         }
 
-        // Everyone else: ask backend which access level they have
         this.auth.getAccessLevel().subscribe({
           next: (res: any) => {
             this.isSubmitting = false;
 
             const level = (res?.accessLevel ?? '').toLowerCase();
 
-            if (level === 'bookkeeper') {
-              this.router.navigateByUrl('/bookkeeper');
-            } else if (level === 'reportviewer') {
-              this.router.navigateByUrl('/viewer');
+            if (level === 'bookkeeper' || level === 'reportviewer') {
+              this.router.navigateByUrl('/dashboard');
             } else {
               this.router.navigateByUrl('/registered');
             }
