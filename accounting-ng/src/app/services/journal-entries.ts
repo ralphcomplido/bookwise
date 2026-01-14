@@ -17,6 +17,23 @@ export interface JournalEntryCreate {
   lines: JournalEntryLineCreate[];
 }
 
+export interface JournalEntryLineDto {
+  id: number;
+  accountId: number;
+  debit: number;
+  credit: number;
+  memo?: string | null;
+}
+
+export interface JournalEntryDto {
+  id: number;
+  occurredOn: string;
+  description: string;
+  referenceNo?: string | null;
+  createdAtUtc: string;
+  lines: JournalEntryLineDto[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -31,6 +48,13 @@ export class JournalEntries {
   private headers(): HttpHeaders {
     const token = this.auth.getToken();
     return new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
+  }
+
+  getAll(): Observable<JournalEntryDto[]> {
+    return this.http.get<JournalEntryDto[]>(
+      `${this.apiBaseUrl}/api/journal-entries`,
+      { headers: this.headers() }
+    );
   }
 
   create(dto: JournalEntryCreate): Observable<any> {
