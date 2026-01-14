@@ -25,8 +25,8 @@ export function requireAccessLevel(allowed: AccessLevel[]): CanActivateFn {
         }
 
         if (level === 'Admin') return router.parseUrl('/admin');
-        if (level === 'Bookkeeper') return router.parseUrl('/bookkeeper');
-        if (level === 'ReportViewer') return router.parseUrl('/viewer');
+        if (level === 'Bookkeeper') return router.parseUrl('/dashboard');
+        if (level === 'ReportViewer') return router.parseUrl('/dashboard');
         return router.parseUrl('/registered');
       }),
       catchError(() => {
