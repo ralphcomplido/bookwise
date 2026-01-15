@@ -1,7 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AdminUsers } from '../../services/admin-users';
+import { AuthService } from '../../services/auth.service';
 
 export interface AdminUserRow {
   id: string;
@@ -29,11 +31,22 @@ export class Admin implements OnInit {
 
   constructor(
     private adminUsers: AdminUsers,
+    private auth: AuthService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadUsers();
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigateByUrl('/login');
+  }
+
+  goDashboard(): void {
+    this.router.navigateByUrl('/dashboard');
   }
 
   private normalizeRow(raw: any): AdminUserRow {

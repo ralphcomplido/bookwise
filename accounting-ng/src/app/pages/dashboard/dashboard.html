@@ -1,40 +1,52 @@
-<div style="max-width:900px;margin:40px auto;font-family:Arial;">
-  <h2>Dashboard</h2>
-
-  <p *ngIf="isLoading">Loading...</p>
-  <p style="color:red" *ngIf="error">{{ error }}</p>
-
-  <div *ngIf="!isLoading && !error">
-    <p style="color:#555;">
-      Access: <strong>{{ accessLevel || 'Unknown' }}</strong>
-    </p>
-
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;">
-      <a
-        *ngIf="canManageTransactions()"
-        routerLink="/transactions"
-        style="display:inline-block;padding:12px 16px;border:1px solid #ddd;border-radius:8px;text-decoration:none;">
-        Manage Transactions
-      </a>
-
-      <a
-        *ngIf="canManageTransactions()"
-        routerLink="/accounts"
-        style="display:inline-block;padding:12px 16px;border:1px solid #ddd;border-radius:8px;text-decoration:none;">
-        Manage Accounts
-      </a>
-
-      <a
-        *ngIf="canViewReports()"
-        routerLink="/reports"
-        style="display:inline-block;padding:12px 16px;border:1px solid #ddd;border-radius:8px;text-decoration:none;">
-        View Reports
-      </a>
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Dashboard</div>
     </div>
 
-    <div *ngIf="accessLevel === 'Registered'" style="margin-top:16px;">
-      <p>Your account is registered but has not been assigned a role yet.</p>
-      <p>Please contact the admin to assign Bookkeeper or ReportViewer.</p>
+    <button class="btn" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="card">
+    <p *ngIf="isLoading">Loading...</p>
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <div *ngIf="!isLoading && !error">
+      <p class="muted">
+        Access: <strong>{{ accessLevel || 'Unknown' }}</strong>
+      </p>
+
+      <div class="row" style="margin-top:14px;">
+        <a
+          *ngIf="canManageTransactions()"
+          routerLink="/transactions"
+          class="btn btn-secondary"
+          style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
+          Manage Transactions
+        </a>
+
+        <a
+          *ngIf="canManageTransactions()"
+          routerLink="/accounts"
+          class="btn btn-secondary"
+          style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
+          Manage Accounts
+        </a>
+
+        <a
+          *ngIf="canViewReports()"
+          routerLink="/reports"
+          class="btn btn-secondary"
+          style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
+          View Reports
+        </a>
+      </div>
+
+      <div *ngIf="accessLevel === 'Registered'" style="margin-top:16px;">
+        <p>Your account is registered but has not been assigned a role yet.</p>
+        <p>Please contact the admin to assign Bookkeeper or ReportViewer.</p>
+      </div>
     </div>
   </div>
 </div>

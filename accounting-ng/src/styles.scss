@@ -1,1 +1,176 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global app styles (BookWise) */
+
+:root {
+  --bg: #f7f7fb;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  /* Soft website-friendly pink */
+  --primary: #ec4899;        /* pink-500 */
+  --primary-hover: #db2777;  /* pink-600 */
+  --primary-soft: rgba(236, 72, 153, 0.14);
+
+  --danger: #ef4444;
+
+  --radius: 10px;
+  --shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Layout */
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.container-sm {
+  max-width: 460px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.card + .card { margin-top: 14px; }
+
+.row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Typography */
+h1 { font-size: 26px; margin: 0 0 10px 0; }
+h2 { font-size: 22px; margin: 0 0 10px 0; }
+h3 { font-size: 18px; margin: 0 0 10px 0; }
+
+.muted { color: var(--muted); }
+.error { color: var(--danger); margin-top: 10px; }
+
+/* Form controls */
+label { font-size: 12px; color: var(--muted); }
+input, select {
+  height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+}
+
+input:focus, select:focus {
+  border-color: rgba(236, 72, 153, 0.65);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.input-full { width: 100%; }
+
+/* Buttons (pink) */
+.btn {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(236, 72, 153, 0.25);
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn:hover { background: var(--primary-hover); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-secondary {
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover { background: #f9fafb; }
+
+.btn-danger {
+  background: var(--danger);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+/* Links (keep neutral; not pink-heavy) */
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Tables */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.table th {
+  text-align: left;
+  font-size: 12px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  padding: 10px;
+  white-space: nowrap;
+}
+
+.table td {
+  border-bottom: 1px solid #f1f5f9;
+  padding: 10px;
+  vertical-align: top;
+}
+
+.table td.num, .table th.num { text-align: right; }
+
+/* Simple top bar (we’ll use next) */
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+}
+
+.topbar-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand {
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--muted);
+}

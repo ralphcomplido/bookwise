@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { JournalEntries, JournalEntryDto } from '../../services/journal-entries';
 import { Accounts as AccountsService, AccountListItem } from '../../services/accounts';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-transactions',
@@ -28,6 +29,7 @@ export class Transactions implements OnInit {
 
   constructor(
     private router: Router,
+    private auth: AuthService,
     private journal: JournalEntries,
     private accountsApi: AccountsService,
     private cdr: ChangeDetectorRef
@@ -40,6 +42,15 @@ export class Transactions implements OnInit {
 
   get isLoading(): boolean {
     return this.isLoadingEntries || this.isLoadingAccounts;
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigateByUrl('/login');
+  }
+
+  goDashboard(): void {
+    this.router.navigateByUrl('/dashboard');
   }
 
   goExpense(): void {
@@ -136,15 +147,14 @@ export class Transactions implements OnInit {
       const debit = Number(l.debit) || 0;
       const credit = Number(l.credit) || 0;
 
-      if (t === 4 && credit > 0) hasRevenueCredit = true; // Revenue credited
-      if (t === 5 && debit > 0) hasExpenseDebit = true;   // Expense debited
+      if (t === 4 && credit > 0) hasRevenueCredit = true;
+      if (t === 5 && debit > 0) hasExpenseDebit = true;
     }
 
     if (hasRevenueCredit && !hasExpenseDebit) return 'Income';
     if (hasExpenseDebit && !hasRevenueCredit) return 'Expense';
     if (hasRevenueCredit && hasExpenseDebit) return 'Mixed';
 
-    // Heuristic for simple transfers (2-line move between assets)
     if (lines.length === 2) {
       const debitLine = lines.find(x => (Number(x.debit) || 0) > 0);
       const creditLine = lines.find(x => (Number(x.credit) || 0) > 0);

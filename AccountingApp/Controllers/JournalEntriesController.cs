@@ -90,7 +90,6 @@ public class JournalEntriesController : ControllerBase
         if (string.IsNullOrWhiteSpace(dto.Description)) return BadRequest("Description is required.");
         if (dto.Lines is null || dto.Lines.Count < 2) return BadRequest("At least 2 lines are required.");
 
-        // Validate lines and account existence
         foreach (var line in dto.Lines)
         {
             if (line.AccountId <= 0) return BadRequest("AccountId is required for each line.");
@@ -127,7 +126,6 @@ public class JournalEntriesController : ControllerBase
         _db.JournalEntries.Add(entry);
         await _db.SaveChangesAsync();
 
-        // Reload with lines to return a complete DTO
         var created = await _db.JournalEntries
             .AsNoTracking()
             .Where(e => e.Id == entry.Id)
@@ -151,5 +149,89 @@ public class JournalEntriesController : ControllerBase
             .FirstAsync();
 
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+    }
+
+    // Write (Batch Import): Admin, Bookkeeper
+    // Oracle-style journal import: multiple journal entries (each can have its own date)
+    [HttpPost("bulk")]
+    [Authorize(Roles = $"{IdentitySeeder.RoleAdmin},{IdentitySeeder.RoleBookkeeper}")]
+    public async Task<ActionResult<BulkJournalEntriesResultDto>> BulkCreate([FromBody] BulkJournalEntriesCreateDto dto)
+    {
+        if (dto is null) return BadRequest();
+        if (dto.Entries is null || dto.Entries.Count == 0) return BadRequest("Entries is required.");
+        if (dto.Entries.Count > 500) return BadRequest("Too many entries in one batch (max 500).");
+
+        // Validate each entry and collect all account ids
+        var allAccountIds = new HashSet<int>();
+
+        for (var i = 0; i < dto.Entries.Count; i++)
+        {
+            var e = dto.Entries[i];
+
+            if (e is null) return BadRequest($"Entry[{i}] is required.");
+            if (e.OccurredOn == default) return BadRequest($"Entry[{i}]: OccurredOn is required.");
+            if (string.IsNullOrWhiteSpace(e.Description)) return BadRequest($"Entry[{i}]: Description is required.");
+            if (e.Lines is null || e.Lines.Count < 2) return BadRequest($"Entry[{i}]: At least 2 lines are required.");
+
+            foreach (var line in e.Lines)
+            {
+                if (line.AccountId <= 0) return BadRequest($"Entry[{i}]: AccountId is required for each line.");
+                if (line.Debit < 0) return BadRequest($"Entry[{i}]: Debit cannot be negative.");
+                if (line.Credit < 0) return BadRequest($"Entry[{i}]: Credit cannot be negative.");
+                if ((line.Debit > 0 && line.Credit > 0) || (line.Debit == 0 && line.Credit == 0))
+                    return BadRequest($"Entry[{i}]: Each line must have either Debit or Credit (not both).");
+
+                allAccountIds.Add(line.AccountId);
+            }
+
+            var totalDebit = e.Lines.Sum(l => l.Debit);
+            var totalCredit = e.Lines.Sum(l => l.Credit);
+
+            if (totalDebit != totalCredit)
+                return BadRequest($"Entry[{i}]: Journal entry is not balanced.");
+        }
+
+        // Validate account existence once for the whole batch
+        var existingAccountIds = await _db.Accounts
+            .Where(a => allAccountIds.Contains(a.Id))
+            .Select(a => a.Id)
+            .ToListAsync();
+
+        if (existingAccountIds.Count != allAccountIds.Count)
+            return BadRequest("One or more AccountId values are invalid.");
+
+        // Create all entries in a single transaction (all-or-nothing)
+        await using var tx = await _db.Database.BeginTransactionAsync();
+
+        var createdIds = new List<int>(dto.Entries.Count);
+
+        foreach (var e in dto.Entries)
+        {
+            var entry = new JournalEntry(e.OccurredOn, e.Description.Trim(), e.ReferenceNo);
+
+            foreach (var line in e.Lines)
+            {
+                entry.AddLine(line.AccountId, line.Debit, line.Credit, line.Memo);
+            }
+
+            entry.ValidateBalanced();
+
+            _db.JournalEntries.Add(entry);
+        }
+
+        await _db.SaveChangesAsync();
+        await tx.CommitAsync();
+
+        // Collect ids (EF sets ids after SaveChanges)
+        createdIds = await _db.JournalEntries
+            .AsNoTracking()
+            .OrderByDescending(x => x.Id)
+            .Take(dto.Entries.Count)
+            .Select(x => x.Id)
+            .ToListAsync();
+
+        createdIds.Reverse();
+
+        return Ok(new BulkJournalEntriesResultDto(createdIds.Count, createdIds));
     }
 }

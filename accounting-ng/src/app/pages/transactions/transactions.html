@@ -1,83 +1,80 @@
-<div style="max-width:900px;margin:40px auto;font-family:Arial;">
-  <h2>Manage Transactions</h2>
-
-  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;">
-    <button style="padding:12px 16px;" (click)="goExpense()">Enter Expense</button>
-    <button style="padding:12px 16px;" (click)="goIncome()">Enter Income</button>
-    <button style="padding:12px 16px;" (click)="goTransfer()">Transfer Funds</button>
-    <button style="padding:12px 16px;" (click)="goJournal()">Journal Entry</button>
-  </div>
-
-  <div style="margin-top:26px;border:1px solid #ddd;padding:14px;border-radius:8px;">
-    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;">
-      <div>
-        <label>Search</label><br />
-        <input type="text" [(ngModel)]="searchText" placeholder="Description, reference, or type..."
-               style="min-width:260px;" />
-      </div>
-
-      <div>
-        <label>Start Date</label><br />
-        <input type="date" [(ngModel)]="startDate" />
-      </div>
-
-      <div>
-        <label>End Date</label><br />
-        <input type="date" [(ngModel)]="endDate" />
-      </div>
-
-      <div>
-        <button (click)="refresh()" style="padding:8px 14px;">Refresh</button>
-      </div>
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Manage Transactions</div>
     </div>
 
-    <div *ngIf="isLoading" style="margin-top:10px;color:#555;">Loading...</div>
-    <p style="color:red;margin-top:10px;" *ngIf="error">{{ error }}</p>
+    <div class="row" style="align-items:center;">
+      <button class="btn btn-secondary" (click)="goDashboard()">Back to Dashboard</button>
+      <button class="btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
 
-    <div style="margin-top:14px;">
-      <h3 style="margin:0 0 10px 0;">Journal Entries</h3>
+  <div class="card">
+    <div class="row" style="margin-bottom:14px;">
+      <button class="btn btn-secondary" (click)="goExpense()">Enter Expense</button>
+      <button class="btn btn-secondary" (click)="goIncome()">Enter Income</button>
+      <button class="btn btn-secondary" (click)="goTransfer()">Transfer Funds</button>
+      <button class="btn btn-secondary" (click)="goJournal()">Journal Entry</button>
+    </div>
 
-      <table style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr>
-            <th style="text-align:left;border-bottom:1px solid #ddd;padding:8px;width:120px;">Date</th>
-            <th style="text-align:left;border-bottom:1px solid #ddd;padding:8px;width:110px;">Type</th>
-            <th style="text-align:left;border-bottom:1px solid #ddd;padding:8px;width:140px;">Reference</th>
-            <th style="text-align:left;border-bottom:1px solid #ddd;padding:8px;">Description</th>
-            <th style="text-align:right;border-bottom:1px solid #ddd;padding:8px;width:140px;">Total Debit</th>
-            <th style="text-align:right;border-bottom:1px solid #ddd;padding:8px;width:140px;">Total Credit</th>
-          </tr>
-        </thead>
+    <div class="card" style="box-shadow:none;">
+      <div class="row">
+        <div>
+          <label>Search</label><br />
+          <input type="text" [(ngModel)]="searchText" placeholder="Description, reference, or type..." style="min-width:260px;" />
+        </div>
 
-        <tbody>
-          <tr *ngFor="let e of filteredEntries()">
-            <td style="border-bottom:1px solid #f0f0f0;padding:8px;">
-              {{ occurredOnDateOnly(e) }}
-            </td>
-            <td style="border-bottom:1px solid #f0f0f0;padding:8px;">
-              {{ entryType(e) }}
-            </td>
-            <td style="border-bottom:1px solid #f0f0f0;padding:8px;">
-              {{ e.referenceNo || '' }}
-            </td>
-            <td style="border-bottom:1px solid #f0f0f0;padding:8px;">
-              {{ e.description }}
-            </td>
-            <td style="border-bottom:1px solid #f0f0f0;padding:8px;text-align:right;">
-              {{ totalDebit(e) | number:'1.2-2' }}
-            </td>
-            <td style="border-bottom:1px solid #f0f0f0;padding:8px;text-align:right;">
-              {{ totalCredit(e) | number:'1.2-2' }}
-            </td>
-          </tr>
+        <div>
+          <label>Start Date</label><br />
+          <input type="date" [(ngModel)]="startDate" />
+        </div>
 
-          <tr *ngIf="!isLoading && filteredEntries().length === 0">
-            <td colspan="6" style="padding:10px;color:#555;">
-              No journal entries found for the current filters.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <div>
+          <label>End Date</label><br />
+          <input type="date" [(ngModel)]="endDate" />
+        </div>
+
+        <div>
+          <button class="btn" (click)="refresh()">Refresh</button>
+        </div>
+      </div>
+
+      <div class="muted" style="margin-top:10px;" *ngIf="isLoading">Loading...</div>
+      <p class="error" *ngIf="error">{{ error }}</p>
+
+      <div style="margin-top:14px;">
+        <h3 style="margin:0 0 10px 0;">Journal Entries</h3>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width:120px;">Date</th>
+              <th style="width:110px;">Type</th>
+              <th style="width:140px;">Reference</th>
+              <th>Description</th>
+              <th class="num" style="width:140px;">Total Debit</th>
+              <th class="num" style="width:140px;">Total Credit</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let e of filteredEntries()">
+              <td>{{ occurredOnDateOnly(e) }}</td>
+              <td>{{ entryType(e) }}</td>
+              <td>{{ e.referenceNo || '' }}</td>
+              <td>{{ e.description }}</td>
+              <td class="num">{{ totalDebit(e) | number:'1.2-2' }}</td>
+              <td class="num">{{ totalCredit(e) | number:'1.2-2' }}</td>
+            </tr>
+
+            <tr *ngIf="!isLoading && filteredEntries().length === 0">
+              <td colspan="6" class="muted">No journal entries found for the current filters.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

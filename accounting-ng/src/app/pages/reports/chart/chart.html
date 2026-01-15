@@ -1,0 +1,131 @@
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Chart Report</div>
+      <div class="muted" style="margin-top:4px;">
+        Generated: <strong>{{ generatedAt }}</strong>
+      </div>
+    </div>
+
+    <div class="row" style="align-items:center;">
+      <button class="btn btn-secondary" (click)="goReports()">Back to Reports</button>
+      <button class="btn btn-secondary" (click)="goDashboard()">Dashboard</button>
+      <button class="btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Start Date</label><br />
+        <input type="date" [(ngModel)]="startDate" [disabled]="isLoading" />
+      </div>
+
+      <div>
+        <label>End Date</label><br />
+        <input type="date" [(ngModel)]="endDate" [disabled]="isLoading" />
+      </div>
+
+      <div>
+        <label>View</label><br />
+        <select [(ngModel)]="granularity" (ngModelChange)="onGranularityChanged()" [disabled]="isLoading">
+          <option [ngValue]="'Daily'">Daily</option>
+          <option [ngValue]="'Weekly'">Weekly</option>
+          <option [ngValue]="'Monthly'">Monthly</option>
+          <option [ngValue]="'Quarterly'">Quarterly</option>
+          <option [ngValue]="'Yearly'">Yearly</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Show</label><br />
+        <select [(ngModel)]="chartView" (ngModelChange)="onChartViewChanged()" [disabled]="isLoading">
+          <option [ngValue]="'Both'">Income & Expense</option>
+          <option [ngValue]="'Income'">Income only</option>
+          <option [ngValue]="'Expense'">Expense only</option>
+        </select>
+      </div>
+
+      <div>
+        <button class="btn" (click)="runReport()" [disabled]="isLoading">Run Report</button>
+      </div>
+
+      <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-secondary" (click)="setThisWeek()" [disabled]="isLoading">This Week</button>
+        <button class="btn btn-secondary" (click)="setThisMonth()" [disabled]="isLoading">This Month</button>
+        <button class="btn btn-secondary" (click)="setThisYear()" [disabled]="isLoading">This Year</button>
+      </div>
+    </div>
+
+    <div class="muted" style="margin-top:10px;" *ngIf="isLoading">Loading...</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px 0;">Summary</h3>
+
+    <div class="row" style="align-items:center;">
+      <div *ngIf="chartView === 'Both' || chartView === 'Income'">
+        <div class="muted">Total Income</div>
+        <div style="font-size:22px;font-weight:900;">{{ totalIncome() | number:'1.2-2' }}</div>
+      </div>
+
+      <div *ngIf="chartView === 'Both' || chartView === 'Expense'">
+        <div class="muted">Total Expense</div>
+        <div style="font-size:22px;font-weight:900;">{{ totalExpense() | number:'1.2-2' }}</div>
+      </div>
+
+      <div>
+        <div class="muted">Net</div>
+        <div style="font-size:22px;font-weight:900;">{{ totalNet() | number:'1.2-2' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px 0;">Trend ({{ granularity }})</h3>
+
+    <div class="muted" *ngIf="trendRows.length === 0" style="margin-bottom:8px;">
+      No income/expense activity for the selected date range.
+    </div>
+
+    <div style="overflow-x:auto;padding-bottom:6px;">
+      <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:nowrap;min-height:180px;">
+        <div *ngFor="let r of trendRows" style="width:64px;flex:0 0 auto;">
+          <div style="display:flex;gap:6px;align-items:flex-end;justify-content:center;height:150px;border-bottom:1px solid #eee;">
+            <div
+              *ngIf="showIncome()"
+              [style.height.px]="chartHeight(r.income)"
+              style="width:22px;background:#2563eb;border-radius:3px 3px 0 0;"
+              title="Income">
+            </div>
+
+            <div
+              *ngIf="showExpense()"
+              [style.height.px]="chartHeight(r.expense)"
+              style="width:22px;background:#ef4444;border-radius:3px 3px 0 0;"
+              title="Expense">
+            </div>
+          </div>
+
+          <div class="muted" style="font-size:11px;text-align:center;margin-top:6px;white-space:nowrap;">
+            {{ r.label }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="gap:16px;margin-top:10px;">
+      <div *ngIf="showIncome()">
+        <span style="display:inline-block;width:10px;height:10px;background:#2563eb;margin-right:6px;"></span>
+        <span class="muted">Income</span>
+      </div>
+      <div *ngIf="showExpense()">
+        <span style="display:inline-block;width:10px;height:10px;background:#ef4444;margin-right:6px;"></span>
+        <span class="muted">Expense</span>
+      </div>
+    </div>
+  </div>
+</div>

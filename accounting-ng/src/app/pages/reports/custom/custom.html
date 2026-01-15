@@ -1,0 +1,110 @@
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Custom Report</div>
+      <div class="muted" style="margin-top:4px;">
+        Generated: <strong>{{ generatedAt }}</strong>
+      </div>
+    </div>
+
+    <div class="row" style="align-items:center;">
+      <button class="btn btn-secondary" (click)="goReports()">Back to Reports</button>
+      <button class="btn btn-secondary" (click)="goDashboard()">Dashboard</button>
+      <button class="btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Start Date</label><br />
+        <input type="date" [(ngModel)]="startDate" [disabled]="isLoading" />
+      </div>
+
+      <div>
+        <label>End Date</label><br />
+        <input type="date" [(ngModel)]="endDate" [disabled]="isLoading" />
+      </div>
+
+      <div>
+        <label>Type</label><br />
+        <select [(ngModel)]="type" [disabled]="isLoading">
+          <option [ngValue]="''">All</option>
+          <option [ngValue]="'Income'">Income</option>
+          <option [ngValue]="'Expense'">Expense</option>
+          <option [ngValue]="'Transfer'">Transfer</option>
+          <option [ngValue]="'Journal'">Journal</option>
+          <option [ngValue]="'Mixed'">Mixed</option>
+        </select>
+      </div>
+
+      <div style="min-width:320px;">
+        <label>Account</label><br />
+        <select [(ngModel)]="accountId" [disabled]="isLoading" style="width:100%;">
+          <option [ngValue]="null">All Accounts</option>
+          <option *ngFor="let a of accounts" [ngValue]="a.id">
+            {{ a.accountCode }} - {{ a.name }}
+            ({{ a.type === 1 ? 'Asset' : a.type === 2 ? 'Liability' : a.type === 3 ? 'Equity' : a.type === 4 ? 'Revenue' : a.type === 5 ? 'Expense' : a.type }})
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label>Reference # contains</label><br />
+        <input type="text" [(ngModel)]="refContains" [disabled]="isLoading" placeholder="e.g., INC-2025" />
+      </div>
+
+      <div style="flex:1;min-width:240px;">
+        <label>Description contains</label><br />
+        <input class="input-full" type="text" [(ngModel)]="descContains" [disabled]="isLoading" placeholder="e.g., rent" />
+      </div>
+
+      <div>
+        <button class="btn" (click)="runReport()" [disabled]="isLoading">Run Report</button>
+      </div>
+
+      <div>
+        <button class="btn btn-secondary" (click)="refresh()" [disabled]="isLoading">Refresh Data</button>
+      </div>
+    </div>
+
+    <div class="muted" style="margin-top:10px;" *ngIf="isLoading">Loading...</div>
+  </div>
+
+  <div class="muted" style="margin-top:12px;">
+    Results: <strong>{{ totalRows() }}</strong>
+  </div>
+
+  <div class="card" style="margin-top:12px;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:120px;">Date</th>
+          <th style="width:110px;">Type</th>
+          <th style="width:160px;">Reference</th>
+          <th>Description</th>
+          <th class="num" style="width:140px;">Total Debit</th>
+          <th class="num" style="width:140px;">Total Credit</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let e of rows">
+          <td>{{ occurredOnDateOnly(e) }}</td>
+          <td>{{ entryType(e) }}</td>
+          <td>{{ e.referenceNo || '' }}</td>
+          <td>{{ e.description }}</td>
+          <td class="num">{{ entryTotalDebit(e) | number:'1.2-2' }}</td>
+          <td class="num">{{ entryTotalCredit(e) | number:'1.2-2' }}</td>
+        </tr>
+
+        <tr *ngIf="rows.length === 0 && !isLoading">
+          <td colspan="6" class="muted">No rows match the current filters.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -30,3 +30,13 @@ public sealed record JournalEntryDto(
     DateTime CreatedAtUtc,
     List<JournalEntryLineDto> Lines
 );
+
+// Batch import (multiple journal entries in one request)
+public sealed record BulkJournalEntriesCreateDto(
+    List<JournalEntryCreateDto> Entries
+);
+
+public sealed record BulkJournalEntriesResultDto(
+    int CreatedCount,
+    List<int> CreatedIds
+);

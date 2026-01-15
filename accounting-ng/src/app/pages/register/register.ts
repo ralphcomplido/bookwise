@@ -16,6 +16,10 @@ export class Register {
   isSubmitting = false;
   form: FormGroup;
 
+  // Modal state
+  showSuccessModal = false;
+  successMessage = '';
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
@@ -28,21 +32,15 @@ export class Register {
     });
   }
 
-  /**
-   * Mirrors common ASP.NET Core Identity default password requirements
-   * so the UI can fail fast without waiting for backend validation.
-   * NOTE: This does NOT change backend rules; it only prevents avoidable round-trips.
-   */
   private getPasswordClientError(password: string): string | null {
     if (!password || password.length < 6) {
       return 'Password is required (min 6 chars).';
     }
 
-    // Identity default requirements (commonly enabled by default)
     const hasLower = /[a-z]/.test(password);
     const hasUpper = /[A-Z]/.test(password);
     const hasDigit = /[0-9]/.test(password);
-    const hasNonAlphanumeric = /[^a-zA-Z0-9]/.test(password); // includes underscore as non-alphanumeric
+    const hasNonAlphanumeric = /[^a-zA-Z0-9]/.test(password);
 
     if (!hasLower) return 'Password must have at least one lowercase letter.';
     if (!hasUpper) return 'Password must have at least one uppercase letter.';
@@ -50,6 +48,11 @@ export class Register {
     if (!hasNonAlphanumeric) return 'Password must have at least one special character (non-alphanumeric).';
 
     return null;
+  }
+
+  closeSuccessModal(): void {
+    this.showSuccessModal = false;
+    this.router.navigateByUrl('/login');
   }
 
   submit(): void {
@@ -69,7 +72,6 @@ export class Register {
       return;
     }
 
-    // ✅ Fail fast locally so we don't wait on backend validation for obvious rule failures
     const pwError = this.getPasswordClientError(password);
     if (pwError) {
       this.error = pwError;
@@ -81,8 +83,13 @@ export class Register {
     this.auth.register(email, password).subscribe({
       next: () => {
         this.isSubmitting = false;
-        alert('Registration successful. Please log in.');
-        this.router.navigateByUrl('/login');
+
+        // Show a site-styled modal instead of a browser alert
+        this.successMessage = 'Registration successful. Please log in.';
+        this.showSuccessModal = true;
+
+        // Optional: clear form so user can’t double submit
+        this.form.reset();
       },
       error: (err: any) => {
         this.isSubmitting = false;

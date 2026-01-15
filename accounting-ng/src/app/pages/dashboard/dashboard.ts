@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 type AccessLevel = 'Admin' | 'Registered' | 'Bookkeeper' | 'ReportViewer';
@@ -19,11 +19,17 @@ export class Dashboard implements OnInit {
 
   constructor(
     private auth: AuthService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadAccessLevel();
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigateByUrl('/login');
   }
 
   private loadAccessLevel(): void {

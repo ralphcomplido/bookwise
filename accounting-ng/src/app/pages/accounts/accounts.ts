@@ -1,7 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Accounts as AccountsService, AccountCreateDto, AccountListItem } from '../../services/accounts';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-accounts',
@@ -34,11 +36,22 @@ export class Accounts implements OnInit {
 
   constructor(
     private accounts: AccountsService,
+    private auth: AuthService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.load();
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigateByUrl('/login');
+  }
+
+  goDashboard(): void {
+    this.router.navigateByUrl('/dashboard');
   }
 
   load(): void {
@@ -75,7 +88,7 @@ export class Accounts implements OnInit {
       this.error = 'Account Name is required.';
       return;
     }
-    if (![1,2,3,4,5].includes(tp)) {
+    if (![1, 2, 3, 4, 5].includes(tp)) {
       this.error = 'Account Type is required.';
       return;
     }
@@ -93,10 +106,8 @@ export class Accounts implements OnInit {
       next: (created) => {
         this.isSubmitting = false;
 
-        // add to list and keep sorted by code
         this.rows = [...this.rows, created].sort((a, b) => a.accountCode.localeCompare(b.accountCode));
 
-        // reset form
         this.accountCode = '';
         this.name = '';
         this.type = 1;

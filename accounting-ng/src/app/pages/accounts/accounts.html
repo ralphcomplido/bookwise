@@ -1,10 +1,20 @@
-<div style="max-width:1000px;margin:40px auto;font-family:Arial;">
-  <h2>Accounts</h2>
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Accounts</div>
+    </div>
 
-  <div style="border:1px solid #ddd;padding:14px;border-radius:8px;margin:14px 0;">
+    <div class="row" style="align-items:center;">
+      <button class="btn btn-secondary" (click)="goDashboard()">Back to Dashboard</button>
+      <button class="btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="card">
     <h3 style="margin-top:0;">Add Account</h3>
 
-    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div class="row">
       <div>
         <label>Account Code</label><br />
         <input type="text" [(ngModel)]="accountCode" placeholder="e.g., 5100" />
@@ -12,7 +22,7 @@
 
       <div style="flex:1;min-width:240px;">
         <label>Account Name</label><br />
-        <input style="width:100%;" type="text" [(ngModel)]="name" placeholder="e.g., Office Supplies Expense" />
+        <input class="input-full" type="text" [(ngModel)]="name" placeholder="e.g., Office Supplies Expense" />
       </div>
 
       <div>
@@ -23,47 +33,50 @@
       </div>
 
       <div>
-        <button (click)="submit()" [disabled]="isSubmitting">
+        <button class="btn" (click)="submit()" [disabled]="isSubmitting">
           {{ isSubmitting ? 'Saving...' : 'Add' }}
         </button>
       </div>
     </div>
 
-    <p style="color:red;margin:10px 0 0 0;" *ngIf="error">{{ error }}</p>
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <div style="margin-top:12px;">
+      <button class="btn btn-secondary" (click)="load()" [disabled]="isLoading">
+        {{ isLoading ? 'Loading...' : 'Refresh' }}
+      </button>
+    </div>
+
+    <div class="muted" style="margin-top:10px;" *ngIf="isLoading">Loading accounts...</div>
+
+    <div style="margin-top:14px;">
+      <table class="table" *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th style="width:140px;">Code</th>
+            <th>Name</th>
+            <th style="width:160px;">Type</th>
+            <th style="width:120px;"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let a of rows; trackBy: trackById">
+            <td>{{ a.accountCode }}</td>
+            <td>{{ a.name }}</td>
+            <td>{{ typeLabel(a.type) }}</td>
+            <td class="num">
+              <button class="btn btn-danger" (click)="delete(a.id)" [disabled]="deleting[a.id]">
+                {{ deleting[a.id] ? 'Deleting...' : 'Delete' }}
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="rows.length === 0">
+            <td colspan="4" class="muted">No accounts yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-
-  <div style="margin:12px 0;">
-    <button (click)="load()" [disabled]="isLoading">
-      {{ isLoading ? 'Loading...' : 'Refresh' }}
-    </button>
-  </div>
-
-  <p *ngIf="isLoading">Loading accounts...</p>
-
-  <table *ngIf="!isLoading" border="1" cellpadding="8" cellspacing="0" style="width:100%;border-collapse:collapse;">
-    <thead>
-      <tr>
-        <th>Code</th>
-        <th>Name</th>
-        <th>Type</th>
-        <th></th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let a of rows; trackBy: trackById">
-        <td>{{ a.accountCode }}</td>
-        <td>{{ a.name }}</td>
-        <td>{{ typeLabel(a.type) }}</td>
-        <td>
-          <button (click)="delete(a.id)" [disabled]="deleting[a.id]">
-            {{ deleting[a.id] ? 'Deleting...' : 'Delete' }}
-          </button>
-        </td>
-      </tr>
-
-      <tr *ngIf="rows.length === 0">
-        <td colspan="4">No accounts yet.</td>
-      </tr>
-    </tbody>
-
+</div>

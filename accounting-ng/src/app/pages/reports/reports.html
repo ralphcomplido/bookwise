@@ -1,4 +1,26 @@
-<div style="max-width:900px;margin:40px auto;font-family:Arial;">
-  <h2>Reports</h2>
-  <p>Reports page (placeholder). Next step: multi-row, multi-column report with title + date-time stamp.</p>
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Reports</div>
+    </div>
+
+    <div class="row" style="align-items:center;">
+      <button class="btn btn-secondary" (click)="goDashboard()">Back to Dashboard</button>
+      <button class="btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="muted" style="margin-bottom:12px;">
+      Choose a report type:
+    </div>
+
+    <div class="row">
+      <button class="btn btn-secondary" (click)="goIncome()">Income Report</button>
+      <button class="btn btn-secondary" (click)="goExpense()">Expense Report</button>
+      <button class="btn btn-secondary" (click)="goChart()">Chart</button>
+      <button class="btn btn-secondary" (click)="goCustom()">Custom Report</button>
+    </div>
+  </div>
 </div>
