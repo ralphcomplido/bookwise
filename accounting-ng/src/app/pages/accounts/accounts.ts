@@ -186,11 +186,12 @@ export class Accounts implements OnInit {
     this.cdr.detectChanges();
 
     this.accounts.update(a.id, payload).subscribe({
-      next: (updated) => {
+      next: () => {
         this.isSavingEdit = false;
 
+        // API returns 204 No Content, so update the row locally using the payload
         this.rows = this.rows
-          .map(r => (r.id === a.id ? updated : r))
+          .map(r => (r.id === a.id ? { ...r, accountCode: code, name: nm, type: tp } : r))
           .sort((x, y) => x.accountCode.localeCompare(y.accountCode));
 
         this.cancelEdit();

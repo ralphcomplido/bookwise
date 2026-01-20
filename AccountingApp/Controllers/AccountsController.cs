@@ -108,8 +108,16 @@ public class AccountsController : ControllerBase
         if (entity is null) return NotFound();
 
         _db.Accounts.Remove(entity);
-        await _db.SaveChangesAsync();
 
-        return NoContent();
+        try
+        {
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && sqlEx.Number == 547)
+        {
+            // 547 = Foreign key constraint violation (account is referenced by journal entry lines)
+            return Conflict("Cannot delete this account because it is used by one or more journal entry lines.");
+        }
     }
 }
