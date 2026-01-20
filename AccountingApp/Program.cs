@@ -60,9 +60,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularDev", policy =>
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+        policy.WithOrigins("http://localhost:4200", "http://localhost:8085", "https://bookwise-web.agreeablebay-fda76882.westus2.azurecontainerapps.io")
+          .AllowAnyHeader()
+          .AllowAnyMethod());
+
 });
 
 var app = builder.Build();
