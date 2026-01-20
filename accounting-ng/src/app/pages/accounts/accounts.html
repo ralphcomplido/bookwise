@@ -56,19 +56,69 @@
             <th style="width:140px;">Code</th>
             <th>Name</th>
             <th style="width:160px;">Type</th>
-            <th style="width:120px;"></th>
+            <th style="width:260px;"></th>
           </tr>
         </thead>
 
         <tbody>
           <tr *ngFor="let a of rows; trackBy: trackById">
-            <td>{{ a.accountCode }}</td>
-            <td>{{ a.name }}</td>
-            <td>{{ typeLabel(a.type) }}</td>
+            <!-- Code -->
+            <td>
+              <span *ngIf="editingId !== a.id">{{ a.accountCode }}</span>
+              <input
+                *ngIf="editingId === a.id"
+                type="text"
+                [(ngModel)]="editAccountCode"
+                [disabled]="isSavingEdit"
+                style="width:120px;"
+              />
+            </td>
+
+            <!-- Name -->
+            <td>
+              <span *ngIf="editingId !== a.id">{{ a.name }}</span>
+              <input
+                *ngIf="editingId === a.id"
+                class="input-full"
+                type="text"
+                [(ngModel)]="editName"
+                [disabled]="isSavingEdit"
+              />
+            </td>
+
+            <!-- Type -->
+            <td>
+              <span *ngIf="editingId !== a.id">{{ typeLabel(a.type) }}</span>
+              <select
+                *ngIf="editingId === a.id"
+                [(ngModel)]="editType"
+                [disabled]="isSavingEdit"
+              >
+                <option *ngFor="let t of typeOptions" [ngValue]="t.value">{{ t.label }}</option>
+              </select>
+            </td>
+
+            <!-- Actions -->
             <td class="num">
-              <button class="btn btn-danger" (click)="delete(a.id)" [disabled]="deleting[a.id]">
-                {{ deleting[a.id] ? 'Deleting...' : 'Delete' }}
-              </button>
+              <ng-container *ngIf="editingId !== a.id">
+                <button class="btn btn-secondary" (click)="startEdit(a)" [disabled]="isSavingEdit || deleting[a.id]">
+                  Edit
+                </button>
+
+                <button class="btn btn-danger" (click)="delete(a.id)" [disabled]="deleting[a.id] || isSavingEdit">
+                  {{ deleting[a.id] ? 'Deleting...' : 'Delete' }}
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="editingId === a.id">
+                <button class="btn" (click)="saveEdit(a)" [disabled]="isSavingEdit">
+                  {{ isSavingEdit ? 'Saving...' : 'Save' }}
+                </button>
+
+                <button class="btn btn-secondary" (click)="cancelEdit()" [disabled]="isSavingEdit">
+                  Cancel
+                </button>
+              </ng-container>
             </td>
           </tr>
 

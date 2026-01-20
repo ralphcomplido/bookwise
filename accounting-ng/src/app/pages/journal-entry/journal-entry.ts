@@ -76,7 +76,7 @@ export class JournalEntry implements OnInit {
       },
       error: (err: any) => {
         this.isLoadingAccounts = false;
-        this.error = JSON.stringify(err?.error) || err?.message || 'Failed to load accounts';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message || 'Failed to load accounts'));
         this.cdr.detectChanges();
       },
     });
@@ -196,7 +196,7 @@ export class JournalEntry implements OnInit {
       },
       error: (err: any) => {
         this.isSubmitting = false;
-        this.error = JSON.stringify(err?.error) || err?.message || 'Failed to save journal entry';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message ||  'Failed to save journal entry'));
         this.cdr.detectChanges();
       }
     });

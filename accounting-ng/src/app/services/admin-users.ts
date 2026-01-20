@@ -2,16 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
+import { AppConfigService } from './app-config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminUsers {
-  private apiBaseUrl = 'https://localhost:7119';
+  private get apiBaseUrl(): string {
+    return this.config.apiBaseUrl;
+  }
 
   constructor(
     private http: HttpClient,
-    private auth: AuthService
+    private auth: AuthService,
+    private config: AppConfigService
   ) {}
 
   getUsers(): Observable<any> {

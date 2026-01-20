@@ -86,7 +86,7 @@ export class Admin implements OnInit {
       },
       error: (err: any) => {
         this.isLoading = false;
-        this.error = err?.message || JSON.stringify(err?.error) || 'Failed to load users';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message || 'Failed to load users'));
         this.cdr.detectChanges();
       }
     });
@@ -124,7 +124,7 @@ export class Admin implements OnInit {
       },
       error: (err: any) => {
         this.saving[u.id] = false;
-        this.error = err?.message || JSON.stringify(err?.error) || 'Failed to save access level';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message ||  'Failed to save access level'));
         this.cdr.detectChanges();
       }
     });

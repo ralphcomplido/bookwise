@@ -144,14 +144,14 @@ export class ReportsChart implements OnInit {
           },
           error: (err: any) => {
             this.isLoading = false;
-            this.error = JSON.stringify(err?.error) || err?.message || 'Failed to load journal entries';
+            this.error = (typeof err?.error === 'string' ? err.error : (err?.message ||  'Failed to load journal entries'));
             this.cdr.detectChanges();
           }
         });
       },
       error: (err: any) => {
         this.isLoading = false;
-        this.error = JSON.stringify(err?.error) || err?.message || 'Failed to load accounts';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message || 'Failed to load accounts'));
         this.cdr.detectChanges();
       }
     });

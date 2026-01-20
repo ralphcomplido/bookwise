@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { AppConfigService } from './app-config';
 
 export interface JournalEntryLineCreate {
   accountId: number;
@@ -38,11 +39,14 @@ export interface JournalEntryDto {
   providedIn: 'root',
 })
 export class JournalEntries {
-  private apiBaseUrl = 'https://localhost:7119';
+  private get apiBaseUrl(): string {
+    return this.config.apiBaseUrl;
+  }
 
   constructor(
     private http: HttpClient,
-    private auth: AuthService
+    private auth: AuthService,
+    private config: AppConfigService
   ) {}
 
   private headers(): HttpHeaders {

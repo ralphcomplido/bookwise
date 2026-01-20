@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { AppConfigService } from './app-config';
 
 export interface AccountListItem {
   id: number;
@@ -16,15 +17,24 @@ export interface AccountCreateDto {
   type: number;
 }
 
+export interface AccountUpdateDto {
+  accountCode: string;
+  name: string;
+  type: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class Accounts {
-  private apiBaseUrl = 'https://localhost:7119';
+  private get apiBaseUrl(): string {
+    return this.config.apiBaseUrl;
+  }
 
   constructor(
     private http: HttpClient,
-    private auth: AuthService
+    private auth: AuthService,
+    private config: AppConfigService
   ) {}
 
   private headers(): HttpHeaders {
@@ -42,6 +52,14 @@ export class Accounts {
   create(dto: AccountCreateDto): Observable<AccountListItem> {
     return this.http.post<AccountListItem>(
       `${this.apiBaseUrl}/api/accounts`,
+      dto,
+      { headers: this.headers() }
+    );
+  }
+
+  update(id: number, dto: AccountUpdateDto): Observable<AccountListItem> {
+    return this.http.put<AccountListItem>(
+      `${this.apiBaseUrl}/api/accounts/${id}`,
       dto,
       { headers: this.headers() }
     );

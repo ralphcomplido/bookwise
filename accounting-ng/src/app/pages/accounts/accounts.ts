@@ -2,7 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Accounts as AccountsService, AccountCreateDto, AccountListItem } from '../../services/accounts';
+import {
+  Accounts as AccountsService,
+  AccountCreateDto,
+  AccountListItem,
+  AccountUpdateDto
+} from '../../services/accounts';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -25,6 +30,13 @@ export class Accounts implements OnInit {
 
   isSubmitting = false;
   deleting: Record<number, boolean> = {};
+
+  // edit state
+  editingId: number | null = null;
+  editAccountCode = '';
+  editName = '';
+  editType = 1;
+  isSavingEdit = false;
 
   typeOptions = [
     { value: 1, label: 'Asset' },
@@ -67,7 +79,7 @@ export class Accounts implements OnInit {
       },
       error: (err: any) => {
         this.isLoading = false;
-        this.error = JSON.stringify(err?.error) || err?.message || 'Failed to load accounts';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message ||  'Failed to load accounts'));
         this.cdr.detectChanges();
       }
     });
@@ -116,11 +128,83 @@ export class Accounts implements OnInit {
       },
       error: (err: any) => {
         this.isSubmitting = false;
-        this.error = JSON.stringify(err?.error) || err?.message || 'Failed to create account';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message || 'Failed to create account'));
         this.cdr.detectChanges();
       }
     });
   }
+
+  // --------- EDIT FLOW ---------
+
+  startEdit(a: AccountListItem): void {
+    this.error = '';
+    this.editingId = a.id;
+    this.editAccountCode = a.accountCode;
+    this.editName = a.name;
+    this.editType = Number(a.type) || 1;
+    this.cdr.detectChanges();
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+    this.editAccountCode = '';
+    this.editName = '';
+    this.editType = 1;
+    this.isSavingEdit = false;
+    this.cdr.detectChanges();
+  }
+
+  saveEdit(a: AccountListItem): void {
+    if (this.editingId !== a.id) return;
+
+    this.error = '';
+
+    const code = (this.editAccountCode ?? '').trim();
+    const nm = (this.editName ?? '').trim();
+    const tp = Number(this.editType);
+
+    if (!code) {
+      this.error = 'Account Code is required.';
+      return;
+    }
+    if (!nm) {
+      this.error = 'Account Name is required.';
+      return;
+    }
+    if (![1, 2, 3, 4, 5].includes(tp)) {
+      this.error = 'Account Type is required.';
+      return;
+    }
+
+    const payload: AccountUpdateDto = {
+      accountCode: code,
+      name: nm,
+      type: tp
+    };
+
+    this.isSavingEdit = true;
+    this.cdr.detectChanges();
+
+    this.accounts.update(a.id, payload).subscribe({
+      next: (updated) => {
+        this.isSavingEdit = false;
+
+        this.rows = this.rows
+          .map(r => (r.id === a.id ? updated : r))
+          .sort((x, y) => x.accountCode.localeCompare(y.accountCode));
+
+        this.cancelEdit();
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.isSavingEdit = false;
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message || 'Failed to update account'));
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // --------- DELETE ---------
 
   delete(id: number): void {
     this.error = '';
@@ -131,11 +215,16 @@ export class Accounts implements OnInit {
       next: () => {
         this.deleting[id] = false;
         this.rows = this.rows.filter(a => a.id !== id);
+
+        if (this.editingId === id) {
+          this.cancelEdit();
+        }
+
         this.cdr.detectChanges();
       },
       error: (err: any) => {
         this.deleting[id] = false;
-        this.error = JSON.stringify(err?.error) || err?.message || 'Failed to delete account';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message || 'Failed to delete account'));
         this.cdr.detectChanges();
       }
     });

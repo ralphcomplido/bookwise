@@ -45,7 +45,7 @@ export class Dashboard implements OnInit {
       },
       error: (err: any) => {
         this.isLoading = false;
-        this.error = err?.message || JSON.stringify(err?.error) || 'Failed to load access level';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message ||  'Failed to load access level'));
         this.cdr.detectChanges();
       }
     });

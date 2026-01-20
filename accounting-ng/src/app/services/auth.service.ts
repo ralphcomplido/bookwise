@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { AppConfigService } from './app-config';
 
 export interface LoginResponse {
   tokenType?: string;
@@ -18,9 +19,11 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiBaseUrl = 'https://localhost:7119';
+  private get apiBaseUrl(): string {
+    return this.config.apiBaseUrl;
+  }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private config: AppConfigService) {}
 
   register(email: string, password: string): Observable<unknown> {
     return this.http.post(`${this.apiBaseUrl}/register`, { email, password });
@@ -57,13 +60,12 @@ export class AuthService {
   }
 
   getAccessLevel(): Observable<{ accessLevel: string }> {
-  const token = this.getToken();
-  const headers: any = token ? { Authorization: `Bearer ${token}` } : {};
+    const token = this.getToken();
+    const headers: any = token ? { Authorization: `Bearer ${token}` } : {};
 
-  return this.http.get<{ accessLevel: string }>(
-    `${this.apiBaseUrl}/api/access-level`,
-    { headers }
-  );
-}
-
+    return this.http.get<{ accessLevel: string }>(
+      `${this.apiBaseUrl}/api/access-level`,
+      { headers }
+    );
+  }
 }

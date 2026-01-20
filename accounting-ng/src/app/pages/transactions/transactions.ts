@@ -87,7 +87,7 @@ export class Transactions implements OnInit {
       },
       error: (err: any) => {
         this.isLoadingAccounts = false;
-        this.error = JSON.stringify(err?.error) || err?.message || 'Failed to load accounts';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message || 'Failed to load accounts'));
         this.cdr.detectChanges();
       }
     });
@@ -106,7 +106,7 @@ export class Transactions implements OnInit {
       },
       error: (err: any) => {
         this.isLoadingEntries = false;
-        this.error = JSON.stringify(err?.error) || err?.message || 'Failed to load journal entries';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message || 'Failed to load journal entries'));
         this.cdr.detectChanges();
       }
     });

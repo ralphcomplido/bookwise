@@ -93,7 +93,7 @@ export class Register {
       },
       error: (err: any) => {
         this.isSubmitting = false;
-        this.error = JSON.stringify(err?.error) || 'Registration failed';
+        this.error = (typeof err?.error === 'string' ? err.error : (err?.message ||  'Registration failed'));
       }
     });
   }
