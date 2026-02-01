@@ -1,0 +1,132 @@
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Accounts</div>
+    </div>
+
+    <div class="row" style="align-items:center;">
+      <button class="btn btn-secondary" (click)="goDashboard()">Back to Dashboard</button>
+      <button class="btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">Add Account</h3>
+
+    <div class="row">
+      <div>
+        <label>Account Code</label><br />
+        <input type="text" [(ngModel)]="accountCode" placeholder="e.g., 5100" />
+      </div>
+
+      <div style="flex:1;min-width:240px;">
+        <label>Account Name</label><br />
+        <input class="input-full" type="text" [(ngModel)]="name" placeholder="e.g., Office Supplies Expense" />
+      </div>
+
+      <div>
+        <label>Type</label><br />
+        <select [(ngModel)]="type">
+          <option *ngFor="let t of typeOptions" [ngValue]="t.value">{{ t.label }}</option>
+        </select>
+      </div>
+
+      <div>
+        <button class="btn" (click)="submit()" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Saving...' : 'Add' }}
+        </button>
+      </div>
+    </div>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <div style="margin-top:12px;">
+      <button class="btn btn-secondary" (click)="load()" [disabled]="isLoading">
+        {{ isLoading ? 'Loading...' : 'Refresh' }}
+      </button>
+    </div>
+
+    <div class="muted" style="margin-top:10px;" *ngIf="isLoading">Loading accounts...</div>
+
+    <div style="margin-top:14px;">
+      <table class="table" *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th style="width:140px;">Code</th>
+            <th>Name</th>
+            <th style="width:160px;">Type</th>
+            <th style="width:260px;"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let a of rows; trackBy: trackById">
+            <!-- Code -->
+            <td>
+              <span *ngIf="editingId !== a.id">{{ a.accountCode }}</span>
+              <input
+                *ngIf="editingId === a.id"
+                type="text"
+                [(ngModel)]="editAccountCode"
+                [disabled]="isSavingEdit"
+                style="width:120px;"
+              />
+            </td>
+
+            <!-- Name -->
+            <td>
+              <span *ngIf="editingId !== a.id">{{ a.name }}</span>
+              <input
+                *ngIf="editingId === a.id"
+                class="input-full"
+                type="text"
+                [(ngModel)]="editName"
+                [disabled]="isSavingEdit"
+              />
+            </td>
+
+            <!-- Type -->
+            <td>
+              <span *ngIf="editingId !== a.id">{{ typeLabel(a.type) }}</span>
+              <select
+                *ngIf="editingId === a.id"
+                [(ngModel)]="editType"
+                [disabled]="isSavingEdit"
+              >
+                <option *ngFor="let t of typeOptions" [ngValue]="t.value">{{ t.label }}</option>
+              </select>
+            </td>
+
+            <!-- Actions -->
+            <td class="num">
+              <ng-container *ngIf="editingId !== a.id">
+                <button class="btn btn-secondary" (click)="startEdit(a)" [disabled]="isSavingEdit || deleting[a.id]">
+                  Edit
+                </button>
+
+                <button class="btn btn-danger" (click)="delete(a.id)" [disabled]="deleting[a.id] || isSavingEdit">
+                  {{ deleting[a.id] ? 'Deleting...' : 'Delete' }}
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="editingId === a.id">
+                <button class="btn" (click)="saveEdit(a)" [disabled]="isSavingEdit">
+                  {{ isSavingEdit ? 'Saving...' : 'Save' }}
+                </button>
+
+                <button class="btn btn-secondary" (click)="cancelEdit()" [disabled]="isSavingEdit">
+                  Cancel
+                </button>
+              </ng-container>
+            </td>
+          </tr>
+
+          <tr *ngIf="rows.length === 0">
+            <td colspan="4" class="muted">No accounts yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

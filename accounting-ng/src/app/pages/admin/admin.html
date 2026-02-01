@@ -1,0 +1,67 @@
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Admin</div>
+    </div>
+
+    <div class="row" style="align-items:center;">
+      <button class="btn btn-secondary" (click)="goDashboard()">Back to Dashboard</button>
+      <button class="btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="align-items:center;margin-bottom:12px;">
+      <button class="btn btn-secondary" (click)="loadUsers()" [disabled]="isLoading">
+        {{ isLoading ? 'Loading...' : 'Refresh' }}
+      </button>
+    </div>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+    <div class="muted" *ngIf="isLoading">Loading users...</div>
+
+    <table class="table" *ngIf="!isLoading">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th style="width:160px;">Access Level</th>
+          <th style="width:220px;">Set Access Level</th>
+          <th style="width:140px;"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let u of users; trackBy: trackById">
+          <td>{{ u.email }}</td>
+          <td>{{ u.accessLevel }}</td>
+
+          <td>
+            <span *ngIf="isAdminRow(u)" class="muted" style="font-weight:700;">Admin (fixed)</span>
+
+            <select *ngIf="!isAdminRow(u)" [(ngModel)]="selected[u.id]">
+              <option *ngFor="let level of accessLevels" [ngValue]="level">
+                {{ level }}
+              </option>
+            </select>
+          </td>
+
+          <td class="num">
+            <button
+              class="btn"
+              *ngIf="!isAdminRow(u)"
+              (click)="save(u)"
+              [disabled]="!canSave(u) || saving[u.id]"
+            >
+              {{ saving[u.id] ? 'Saving...' : 'Save' }}
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="users.length === 0">
+          <td colspan="4" class="muted">No users found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="container-sm">
+  <div class="card">
+    <h2>BookWise</h2>
+    <div class="muted" style="margin-bottom:14px;">Create your account to get started.</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div style="margin-bottom:12px;">
+        <label>Email</label><br />
+        <input class="input-full" type="email" formControlName="email" />
+        <small class="error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+          Enter a valid email.
+        </small>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label>Password</label><br />
+        <input class="input-full" type="password" formControlName="password" />
+        <small class="error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+          Password is required (min 6 chars).
+        </small>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label>Confirm Password</label><br />
+        <input class="input-full" type="password" formControlName="confirmPassword" />
+      </div>
+
+      <button class="btn" type="submit" [disabled]="isSubmitting || form.invalid">
+        {{ isSubmitting ? 'Registering...' : 'Register' }}
+      </button>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+    </form>
+
+    <p style="margin-top:14px;">
+      Already have an account? <a routerLink="/login">Login</a>
+    </p>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div
+  *ngIf="showSuccessModal"
+  style="position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9999;"
+>
+  <div class="card" style="max-width:440px;width:100%;">
+    <h3 style="margin-top:0;">Success</h3>
+    <p style="margin:0 0 14px 0;">{{ successMessage }}</p>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button class="btn" type="button" (click)="closeSuccessModal()">OK</button>
+    </div>
+  </div>
+</div>

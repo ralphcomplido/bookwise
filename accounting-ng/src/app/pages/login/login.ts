@@ -1,0 +1,77 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  templateUrl: './login.html',
+  styleUrl: './login.scss'
+})
+export class Login {
+  error = '';
+  isSubmitting = false;
+  form: FormGroup;
+
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router
+  ) {
+    this.form = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
+
+  submit(): void {
+    this.error = '';
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    const email = this.form.get('email')?.value ?? '';
+    const password = this.form.get('password')?.value ?? '';
+
+    this.auth.login(email, password).subscribe({
+      next: () => {
+        const normalized = (email ?? '').trim().toLowerCase();
+
+        if (normalized === 'admin@local.test') {
+          this.isSubmitting = false;
+          this.router.navigateByUrl('/admin');
+          return;
+        }
+
+        this.auth.getAccessLevel().subscribe({
+          next: (res: any) => {
+            this.isSubmitting = false;
+
+            const level = (res?.accessLevel ?? '').toLowerCase();
+
+            if (level === 'bookkeeper' || level === 'reportviewer') {
+              this.router.navigateByUrl('/dashboard');
+            } else {
+              this.router.navigateByUrl('/registered');
+            }
+          },
+          error: (_err: any) => {
+            this.isSubmitting = false;
+            this.router.navigateByUrl('/registered');
+          }
+        });
+      },
+      error: (err: any) => {
+        this.isSubmitting = false;
+        this.error = err?.error?.title ?? err?.error ?? 'Login failed';
+      }
+    });
+  }
+}

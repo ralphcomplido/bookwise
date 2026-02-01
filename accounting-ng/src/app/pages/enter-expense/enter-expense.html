@@ -1,0 +1,71 @@
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Enter Expense</div>
+    </div>
+
+    <button class="btn btn-secondary" (click)="cancel()" [disabled]="isSubmitting">
+      Back
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="row" style="margin-bottom:10px;">
+      <div style="min-width:280px;">
+        <label>Expense Account (Debit)</label><br />
+        <select [(ngModel)]="expenseAccountId" [disabled]="isLoadingAccounts" style="width:100%;">
+          <option *ngFor="let a of accounts" [ngValue]="a.id">
+            {{ a.accountCode }} - {{ a.name }} ({{ typeLabel(a.type) }})
+          </option>
+        </select>
+        <div class="muted" *ngIf="isLoadingAccounts" style="margin-top:6px;">Loading accounts...</div>
+      </div>
+
+      <div style="min-width:280px;">
+        <label>Payment Account (Credit)</label><br />
+        <select [(ngModel)]="paymentAccountId" [disabled]="isLoadingAccounts" style="width:100%;">
+          <option *ngFor="let a of accounts" [ngValue]="a.id">
+            {{ a.accountCode }} - {{ a.name }} ({{ typeLabel(a.type) }})
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:10px;">
+      <div>
+        <label>Date</label><br />
+        <input type="date" [(ngModel)]="occurredOn" />
+      </div>
+
+      <div style="flex:1;min-width:260px;">
+        <label>Description</label><br />
+        <input class="input-full" type="text" [(ngModel)]="description" />
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:10px;">
+      <div>
+        <label>Amount</label><br />
+        <input type="number" step="0.01" [(ngModel)]="amount" />
+      </div>
+
+      <div style="flex:1;min-width:260px;">
+        <label>Reference No (optional)</label><br />
+        <input class="input-full" type="text" [(ngModel)]="referenceNo" />
+      </div>
+    </div>
+
+    <div class="row" style="align-items:center;margin-top:12px;">
+      <button class="btn" (click)="submit()" [disabled]="isSubmitting || isLoadingAccounts">
+        {{ isSubmitting ? 'Saving...' : 'Save Expense' }}
+      </button>
+
+      <button class="btn btn-secondary" (click)="cancel()" [disabled]="isSubmitting">
+        Cancel
+      </button>
+    </div>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+  </div>
+</div>

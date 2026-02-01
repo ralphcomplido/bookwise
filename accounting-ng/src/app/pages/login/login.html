@@ -1,0 +1,34 @@
+<div class="container-sm">
+  <div class="card">
+    <h2>BookWise</h2>
+    <div class="muted" style="margin-bottom:14px;">Online accounting for everyone.</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div style="margin-bottom:12px;">
+        <label>Email</label><br />
+        <input class="input-full" type="email" formControlName="email" />
+        <small class="error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+          Enter a valid email.
+        </small>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label>Password</label><br />
+        <input class="input-full" type="password" formControlName="password" />
+        <small class="error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+          Password is required (min 6 chars).
+        </small>
+      </div>
+
+      <button class="btn" type="submit" [disabled]="isSubmitting || form.invalid">
+        {{ isSubmitting ? 'Logging in...' : 'Login' }}
+      </button>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+    </form>
+
+    <p style="margin-top:14px;">
+      No account? <a routerLink="/register">Register</a>
+    </p>
+  </div>
+</div>

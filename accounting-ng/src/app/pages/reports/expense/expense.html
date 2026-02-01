@@ -1,0 +1,106 @@
+<div class="container">
+  <div class="row-between" style="margin-bottom:14px;">
+    <div>
+      <h2 style="margin:0;">BookWise</h2>
+      <div class="muted">Expense Report</div>
+      <div class="muted" style="margin-top:4px;">
+        Generated: <strong>{{ generatedAt }}</strong>
+      </div>
+    </div>
+
+    <div class="row" style="align-items:center;">
+      <button class="btn btn-secondary" (click)="goReports()">Back to Reports</button>
+      <button class="btn btn-secondary" (click)="goDashboard()">Dashboard</button>
+      <button class="btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Start Date</label><br />
+        <input type="date" [(ngModel)]="startDate" [disabled]="isLoading" />
+      </div>
+
+      <div>
+        <label>End Date</label><br />
+        <input type="date" [(ngModel)]="endDate" [disabled]="isLoading" />
+      </div>
+
+      <div style="min-width:280px;">
+        <label>Expense Account</label><br />
+        <select [(ngModel)]="accountId" [disabled]="isLoading" style="width:100%;">
+          <option [ngValue]="null">All Expense Accounts</option>
+          <option *ngFor="let a of expenseAccounts" [ngValue]="a.id">
+            {{ a.accountCode }} - {{ a.name }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label>Reference # contains</label><br />
+        <input type="text" [(ngModel)]="refContains" [disabled]="isLoading" placeholder="e.g., EXP" />
+      </div>
+
+      <div style="flex:1;min-width:240px;">
+        <label>Description contains</label><br />
+        <input class="input-full" type="text" [(ngModel)]="descContains" [disabled]="isLoading" placeholder="e.g., rent" />
+      </div>
+
+      <div>
+        <button class="btn" (click)="runReport()" [disabled]="isLoading">
+          Run Report
+        </button>
+      </div>
+
+      <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-secondary" (click)="setThisMonth()" [disabled]="isLoading">This Month</button>
+        <button class="btn btn-secondary" (click)="setThisYear()" [disabled]="isLoading">This Year</button>
+      </div>
+    </div>
+
+    <div class="muted" style="margin-top:10px;" *ngIf="isLoading">Loading...</div>
+  </div>
+
+  <div class="card">
+    <div class="muted">Total Expense (selected range)</div>
+    <div style="font-size:26px;font-weight:900;">
+      {{ totalExpense() | number:'1.2-2' }}
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px 0;">Expense by Account</h3>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:140px;">Account Code</th>
+          <th>Account Name</th>
+          <th class="num" style="width:180px;">Total Expense</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let r of rows">
+          <td>{{ r.accountCode }}</td>
+          <td>{{ r.name }}</td>
+          <td class="num">{{ r.total | number:'1.2-2' }}</td>
+        </tr>
+
+        <tr *ngIf="rows.length === 0 && !isLoading">
+          <td colspan="3" class="muted">No expense rows for the selected filters.</td>
+        </tr>
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="2" class="num" style="font-weight:900;">Total:</td>
+          <td class="num" style="font-weight:900;">{{ totalExpense() | number:'1.2-2' }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
