@@ -1,6 +1,6 @@
 # BookWise — Online Accounting Web App (WGU D424 Capstone)
 
-BookWise is a full-stack online accounting web application built as a capstone project for Western Governors University (D424). It supports true double-entry accounting using journal entries, role-based access control, account management (Chart of Accounts), search/filtering, and reporting.
+BookWise is a full-stack online accounting web application. It supports true double-entry accounting using journal entries, role-based access control, account management (Chart of Accounts), search/filtering, and reporting.
 
 ## Live Demo (Deployed)
 
