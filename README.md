@@ -198,7 +198,7 @@ dotnet test
 
 ---
 
-## Notes for Reviewers / Recruiters
+## Notes
 - The system enforces accounting correctness using:
   - backend validation rules
   - database referential integrity constraints (FK relationships)
@@ -212,12 +212,6 @@ dotnet test
 ---
 
 ## Acknowledgements
-- Capstone developed for Western Governors University (D424)
 - Deployment and automation using Microsoft Azure + Docker
 - Source control: GitLab / GitHub
-- Video demo recorded via Panopto (WGU submission workflow)
 
----
-
-## License
-This project is provided for educational purposes as part of a capstone submission.
